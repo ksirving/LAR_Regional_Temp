@@ -1,0 +1,18 @@
+"","Var","TempMetric","CSCI","ASCI"
+"1","temp.plus_max7rav","Weekly Max of Max DOY",32.1084473669392,13.5597359140529
+"2","tmod_min7rmn","Weekly Min of Daily Mean Temp",14.6208153952435,16.2978611382823
+"3","humidity_max7rav","Weekly Max Humidity",10.5889682081899,8.14220351145561
+"4","temp.doy_max7rav","Weekly Max DOY Mean Temp",10.2242160400856,8.0666763001919
+"5","tmax_min7rmn","Weekly Min of Max Daily Temp (+10%)",6.00670283175539,6.01465800856713
+"6","lst_max7rav","Weekly Max Lst",4.99834357835074,6.17458801477311
+"7","temp.anom_max7rav","Weekly Max DOY Anomoly",4.73360946060385,8.45570027442197
+"8","tmax_max7rmx","Weekly Max of Max Daily Temp (+10%)",3.67848745855551,3.62139961652376
+"9","tmod_avdiff","Weekly Range of Daily Mean Temp",2.98894973359841,3.7909283603219
+"10","tmax_max7rav","Weekly Max of Average Daily Temp (+10%)",2.50280939487498,3.91034730212143
+"11","tmod_max7rmx","Weekly Max of Daily Max Temp",1.87707516744468,4.60219782596197
+"12","tmax_ab30count","Number of Days over 30 Degrees (+10%)",1.30661113649623,0.461805548989675
+"13","tmod_max7rav","Weekly Max of Daily Mean Temp",1.20540648913407,4.02355923802031
+"14","tmax_avdiff","Weekly Mean Range (+10%)",1.16656791403611,3.7069608625261
+"15","tmax_maxdiff","Weekly Max Range (+10%)",1.08426334239958,4.32421169109578
+"16","tmod_maxdiff","Weekly Max Range",0.90872648229216,4.84716639269422
+"17","tmod_ab30count","Number of Days over 30 Degrees",0,0

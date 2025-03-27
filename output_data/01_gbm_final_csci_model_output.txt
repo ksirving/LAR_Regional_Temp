@@ -1,0 +1,32 @@
+
+ 
+ GBM STEP - version 2.9 
+ 
+Performing cross-validation optimisation of a boosted regression tree model 
+for Score and using a family of gaussian 
+Using 12370 observations and 17 predictors 
+creating 10 initial models of 100 trees 
+
+ folds are unstratified 
+total mean deviance =  0.0562 
+tolerance is fixed at  1e-04 
+now adding trees... 
+
+Best parameters for GBM.STEP:
+
+
+ 
+ GBM STEP - version 2.9 
+ 
+Performing cross-validation optimisation of a boosted regression tree model 
+for Score and using a family of gaussian 
+Using 2474 observations and 60 predictors 
+creating 10 initial models of 100 trees 
+
+ folds are unstratified 
+total mean deviance =  0.0562 
+tolerance is fixed at  1e-04 
+now adding trees... 
+
+Best parameters for GBM.STEP:
+
