@@ -50,7 +50,7 @@ temp.endpoints<- unique(na.omit(allData2$Metric))
 temp.endpoints
 
 ## smoothing functions - testing smoothness
-smooth_funcs <- c(3,6)
+smooth_funcs <- c(3,6,9,12,15,18,21)
 
 ## Seasons
 seasons <- unique(allData2$season)

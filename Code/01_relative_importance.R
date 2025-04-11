@@ -23,20 +23,18 @@ head(allData)
 # CSCI BRTs ---------------------------------------------------------------
 
 ## format for model
+unique(allData$Metric)
 
 data <- allData %>%
   filter(BioMetric == "CSCI") %>%
-  dplyr::select(masterid, Year, season, Score, Metric, Value) %>%
+  dplyr::select(masterid, Year,  Score, season, Metric, Value) %>%
   distinct() %>%
-  mutate(Metric2 = paste0(Metric, "_", season)) %>%
-  dplyr::select(-Metric, - season) %>%
-  group_by(Year, masterid, Metric2, Value) %>%
-  ungroup() %>%
-  distinct() %>%
-  pivot_wider(names_from = Metric2, values_from = Value, values_fn = mean) %>% ## take mean of duplicates for now
+  mutate(season = as.factor(season)) %>%
+  pivot_wider(names_from = Metric, values_from = Value, values_fn = mean) %>% ## take mean of duplicates for now
   drop_na() %>%
   dplyr::select(-c(starts_with("humidity"), starts_with("lst"), contains("temp.plus"), contains("anom"), contains("doy")))
-## redo with seasonal metrics
+
+## could also just create seasonal metric names
 
 ## as df
 data <- as.data.frame(data)
@@ -69,10 +67,10 @@ gbm_fit_step <- function(
   set.seed(123) # make it reproducible
   m_step <- My.gbm.step(
     gbm.y = 3, # response in training data
-    gbm.x = 4:63, # temp dat
+    gbm.x = 4:16, # temp dat
     family = "gaussian",
     data = data,
-    max.trees = 1000000, 
+    max.trees = 50000, 
     learning.rate = shrinkage,
     tree.complexity = interaction.depth,
     n.minobsinnode = n.minobsinnode,
@@ -90,7 +88,7 @@ gbm_fit_step <- function(
   }
 }
 
-# use PURRR: this part can take awhile...get some coffee
+# use PURRR: this part can take a looong time
 hyper_grid$dev_explained <-purrr::pmap_dbl(
   hyper_grid,
   ~ gbm_fit_step(
@@ -117,10 +115,10 @@ gbm_final_step <- function(
   set.seed(123) # make it reproducible
   m_step <- My.gbm.step(
     gbm.y = 3, # response in training data
-    gbm.x = 4:63, # temp dat
+    gbm.x = 4:16, # temp dat
     family = "gaussian",
     data = data,
-    max.trees = 1000000, 
+    max.trees = 50000,
     learning.rate = shrinkage,
     tree.complexity = interaction.depth,
     n.minobsinnode = n.minobsinnode,
@@ -175,7 +173,7 @@ write_rds(x = get(fileToSave), path = paste0("output_data/01_",fileToSave, "_mod
 # Save all the datasets used in the model:
 save(list = ls(pattern="data_"), file = tolower(paste0("output_data/01_",fileToSave,"_model_data.rda")))
 
-gbm_final <- read_rds("output_data/01_gbm_final_csci_model.rds")
+gbm_final <- read_rds("ignore/01_gbm_final_csci_model.rds")
 class(gbm_final)
 
 gbm_fin_RI<-as.data.frame(summary(gbm_final, plotit = F, method=relative.influence)) 
@@ -224,17 +222,14 @@ set.seed(321) # reproducibility
 names(data)
 data <- allData %>%
   filter(BioMetric == "ASCI") %>%
-  dplyr::select(masterid, Year, season, Score, Metric, Value) %>%
+  dplyr::select(masterid, Year,  Score, season, Metric, Value) %>%
   distinct() %>%
-  mutate(Metric2 = paste0(Metric, "_", season)) %>%
-  dplyr::select(-Metric, - season) %>%
-  group_by(Year, masterid, Metric2, Value) %>%
-  ungroup() %>%
-  distinct() %>%
-  pivot_wider(names_from = Metric2, values_from = Value, values_fn = mean) %>% ## take mean of duplicates for now
+  mutate(season = as.factor(season)) %>%
+  pivot_wider(names_from = Metric, values_from = Value, values_fn = mean) %>% ## take mean of duplicates for now
   drop_na() %>%
   dplyr::select(-c(starts_with("humidity"), starts_with("lst"), contains("temp.plus"), contains("anom"), contains("doy")))
-## redo with seasonal metrics
+
+# redo with seasonal metrics
 
 data <- as.data.frame(data)
 ## gbm functions in brt.functions script
@@ -260,10 +255,10 @@ gbm_fit_step <- function(
   set.seed(123) # make it reproducible
   m_step <- My.gbm.step(
     gbm.y = 3, # response in training data
-    gbm.x = 4:63, # temp dat
+    gbm.x = 4:16, # temp dat
     family = "gaussian",
     data = data,
-    max.trees = 1000000, 
+    max.trees = 50000,
     #max.trees = 8000, # can specify but don't for now
     learning.rate = shrinkage,
     tree.complexity = interaction.depth,
@@ -310,10 +305,10 @@ gbm_final_step <- function(
   set.seed(123) # make it reproducible
   m_final <- My.gbm.step(
     gbm.y = 3, # response in training data
-    gbm.x = 4:63, # temp dat
+    gbm.x = 4:16, # temp dat
     family = "gaussian",
     data = data,
-    max.trees = 1000000, 
+    max.trees = 50000,
     learning.rate = shrinkage,
     tree.complexity = interaction.depth,
     n.minobsinnode = n.minobsinnode,
@@ -373,19 +368,6 @@ class(gbm_final)
 gbm_fin_RI<-as.data.frame(summary(gbm_final, plotit = F, method=relative.influence)) 
 gbm_fin_RI  
 
-# var     rel.inf
-# tmod_max7rav_spring     tmod_max7rav_spring 17.33959639
-# tmod_max7rmx_spring     tmod_max7rmx_spring 12.26593822
-# tmod_min7rmn_summer     tmod_min7rmn_summer  3.24163495
-# tmax_maxdiff_summer     tmax_maxdiff_summer  2.71855724
-# tmod_min7rmn_winter     tmod_min7rmn_winter  2.70913881
-# tmax_min7rmn_winter     tmax_min7rmn_winter  2.70453253
-# tmax_avdiff_all             tmax_avdiff_all  2.40576355
-# tmod_maxdiff_summer     tmod_maxdiff_summer  2.36689146
-# tmod_min7rmn_spring     tmod_min7rmn_spring  2.30585654
-# tmax_max7rav_winter     tmax_max7rav_winter  2.22183502
-# tmod_avdiff_spring       tmod_avdiff_spring  2.02635760
-# tmax_min7rmn_spring     tmax_min7rmn_spring  1.99545588
 
 # Plots and metrics-------------------------------------------------------------------
 
@@ -427,13 +409,8 @@ gbm_fin_RI <- rbind(gbm_fin_RI_csci, gbm_fin_RI_asci) %>%
 gbm_fin_RI 
 
 # gbm_fin_RI <- gbm_fin_RI %>%
-#   mutate(TempMetric = case_when(Var ==  "temp.plus_max7rav"~"Weekly Max of Max DOY",
-#                                 Var ==  "tmod_min7rmn" ~ "Weekly Min of Daily Mean Temp",
-#                                 Var == "humidity_max7rav" ~ "Weekly Max Humidity",
-#                                 Var == "temp.doy_max7rav" ~ "Weekly Max DOY Mean Temp",
+#   mutate(TempMetric = case_when(Var ==  "tmod_min7rmn" ~ "Weekly Min of Daily Mean Temp",
 #                                 Var == "tmax_min7rmn" ~ "Weekly Min of Max Daily Temp (+10%)",
-#                                 Var == "lst_max7rav" ~  "Weekly Max Lst",
-#                                 Var ==  "temp.anom_max7rav"~"Weekly Max DOY Anomoly",
 #                                 Var ==  "tmax_max7rmx" ~ "Weekly Max of Max Daily Temp (+10%)",
 #                                 Var == "tmod_avdiff" ~ "Weekly Range of Daily Mean Temp",
 #                                 Var == "tmax_max7rav" ~ "Weekly Max of Average Daily Temp (+10%)",

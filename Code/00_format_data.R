@@ -13,6 +13,7 @@ library(tidylog)
 
 bioData <- read.csv("ignore/Bio/SMC_bioassessment2.csv")
 head(bioData)
+
 # CSCI
 
 csci <- bioData %>%

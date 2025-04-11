@@ -41,7 +41,7 @@ temp.endpoints<- unique(na.omit(allData$Metric))
 temp.endpoints
 
 # Thresholds for index
-index.thresholds <- c(0.67, 0.79)
+index.thresholds <- c(0.86, 0.79) ## can change/add modified thresholds
 
 ## Seasons
 seasons <- unique(allData$season)
@@ -59,7 +59,7 @@ log.lm <-lapply(1:nrow(bio_h_summary), function(i)
 
   tmet<-as.character(bio_h_summary[i,"temp.endpoints"])
   bmet<-as.character(bio_h_summary[i,"biol.endpoints"])
-  imet<-as.character(bio_h_summary[i,"index.thresholds"])
+  # imet<-as.character(bio_h_summary[i,"index.thresholds"])
   smet<-as.character(bio_h_summary[i,"seasons"])
 
   mydat<-allData %>%
@@ -69,9 +69,18 @@ log.lm <-lapply(1:nrow(bio_h_summary), function(i)
     drop_na(Score, Value) %>%
     filter_all(all_vars(!is.infinite(.))) %>% ## remove all missing values
     distinct()
+  
+  ## use different threshold for each index
+  if(bmet == "CSCI") {
+    
+    mydat$Condition<-ifelse(mydat$MetricValue < 0.79 ,0, 1) ## convert to binary
+    
+  } else {
+    
+    mydat$Condition<-ifelse(mydat$MetricValue < 0.86 ,0, 1) ## convert to binary
+    
+  }
 
-  mydat$Condition<-ifelse(mydat$Score < imet ,0, 1) ## convert to binary
-  # mydat <- mydat %>% drop_na(Condition)
   
   mydat<-mydat[order(mydat$Score),] ## order by csci value
   glm(Condition~Value, family=binomial(link="logit"), data=mydat) ### glm
@@ -80,7 +89,7 @@ log.lm <-lapply(1:nrow(bio_h_summary), function(i)
 })
 
 ## save models
-save(log.lm, file = "output_data/02_glms_csci_asci_all_temp_metrics.RData")
+save(log.lm, file = "ignore/02_glms_csci_asci_all_temp_metrics.RData")
 
 ### get rsqds and pvals
 for(i in 1:length(log.lm)) {
@@ -148,15 +157,19 @@ DF$BioThreshold <- as.factor(DF$BioThreshold)
 mets <- unique(DF$BioThreshold)
 mets
 m=1
-## facet labels
-supp.labs <- c(
-  "Max_Wkl_Max_StreamT_grt_30_"="Weeks greater than 86F",
-  "Max_Wkly_Mean_StreamT" = "Max Weekly Mean",
-  "Max_Wkl_Max_StreamT" = "Weekly Maximum",
-  "Min_Wkl_Min_StreamT" = "Weekly Minimum",
-  "Max_Wkl_Rng_StreamT" = " Max Weekly Range",
-  "Mean_Wkl_Rng_StreamT" =  "Av Weekly Range" 
-)
+## facet labels 
+supp.labs <-  c("tmod_min7rmn" = "Weekly Min of Daily Mean Temp",
+                 "tmax_min7rmn" = "Weekly Min of Max Daily Temp (+10%)",
+                  "tmax_max7rmx" = "Weekly Max of Max Daily Temp (+10%)",
+                   "tmod_avdiff" = "Weekly Range of Daily Mean Temp",
+                    "tmax_max7rav" = "Weekly Max of Average Daily Temp (+10%)",
+                      "tmod_max7rmx" = "Weekly Max of Daily Max Temp",
+                        "tmax_ab30count" =  "Number of Days over 30 Degrees (+10%)",
+                          "tmod_max7rav" = "Weekly Max of Daily Mean Temp",
+                            "tmax_avdiff" = "Weekly Mean Range (+10%)",
+                              "tmax_maxdiff" = "Weekly Max Range (+10%)",
+                                "tmod_maxdiff" = "Weekly Max Range",
+                                  "tmod_ab30count" = "Number of Days over 30 Degrees")
 
 for(m in 1:length(mets)) {
   
@@ -176,7 +189,7 @@ for(m in 1:length(mets)) {
   
   T1
   
-  file.name1 <- paste0(out.dir, "03_", mets[m], "_csci_temp_response_predicted_glm_simple.jpg")
+  file.name1 <- paste0(out.dir, "02_", mets[m], "_csci_temp_response_predicted_glm_simple.jpg")
   ggsave(T1, filename=file.name1, dpi=300, height=5, width=7.5)
 }
 
@@ -201,7 +214,7 @@ for(m in 1:length(mets)) {
   
   T1
   
-  file.name1 <- paste0(out.dir, "03_", mets[m], "_temp_response_predicted_glm.jpg")
+  file.name1 <- paste0(out.dir, "02_", mets[m], "_temp_response_predicted_glm.jpg")
   ggsave(T1, filename=file.name1, dpi=300, height=6, width=6)
 }
 

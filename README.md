@@ -39,3 +39,34 @@ all data df - ignore/00_all_data.RData
 
 Boosted regression trees to evaluate relative importance
 
+done on csci and asci separately. tunes brts and chooses final model
+
+estimates relative importance
+
+## output: data
+output_data/01_rel_imp_asci_labels.csv
+output_data/01_rel_imp_csci_labels.csv
+
+## output: figure
+01_rel_imp_csci_asci_bar_plot.jpg"
+
+## Script 02_logistic_regression
+
+builds GLMs per bio index, temp metric and season
+
+predicts probability of achieveing healthy score
+
+output: data
+ignore/Output/01_glms_csci_asci_all_flow_metrics.RData # models
+output_data/02_glm_rsqds.RData # coeficients
+
+Output: figures
+all figures saved separately
+example - 02_tmax_max7rmx_temp_response_predicted_glm.jpg
+
+## Script 03_GAMs
+
+exploratory code to see if GAMs would be more useful than GLMs
+
+
+
